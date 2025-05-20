@@ -1,0 +1,161 @@
+.main-container-fluid{
+    margin:var(--margin-padding-medium) 0;
+    padding: var(--margin-padding-large);
+    width:100vw;
+      height: 100vh;
+    background-color: #fafafa;
+    color: #333;
+}
+
+/* Sidebar - light background, subtle shadow, and padding */
+.Sidebar-admin-inbox {
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  padding: 1rem 1rem;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.sidebar-header h4 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #444;
+}
+
+/* Chat panel - clean white with subtle borders */
+.Chat-panel {
+  background-color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.Chat-panel-header {
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #222;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+}
+
+.Chat-panel-header .actions button {
+  color: #666;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.Chat-panel-header .actions button:hover {
+  color: #007bff;
+}
+
+.Chat-panel-body {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #444;
+}
+
+.Chat-panel-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #eee;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+}
+
+.reply-box {
+  width: 100%;
+}
+
+.reply-box-actions {
+  margin-bottom: 0.5rem;
+}
+
+.reply-box-actions button {
+  color: #666;
+  font-size: 1.2rem;
+  padding: 0.2rem 0.4rem;
+  margin-right: 0.5rem;
+}
+
+.reply-box-actions button:hover {
+  color: #007bff;
+}
+
+/* Copilot panel - subtle light grey background */
+.Copilot-panel {
+  background-color: #fafafa;
+  height: 100vh;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.copilot-header h4 {
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.ai-suggestion {
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+  padding: 1rem;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.ai-suggestion-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* Scrollbar for overflow areas */
+.Chat-panel-body::-webkit-scrollbar,
+.Sidebar-admin-inbox::-webkit-scrollbar,
+.Copilot-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.Chat-panel-body::-webkit-scrollbar-thumb,
+.Sidebar-admin-inbox::-webkit-scrollbar-thumb,
+.Copilot-panel::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .Sidebar-admin-inbox, .Copilot-panel {
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+  .Chat-panel {
+    height: auto;
+    border-right: none;
+  }
+  .Chat-panel-body {
+    height: 300px;
+  }
+}
+

@@ -1,0 +1,30 @@
+:root{
+  --color-primary: #646cff;
+  --color-primary-hover: #535bf2;
+  --color-background: #1a1a1a;
+  --color-text: #ffffff;
+  --color-border: rgba(0, 0, 0, .7);
+  --color-border-hover: #646cff;
+  --color-border-focus: #646cff;
+
+  --margin-padding-large: 2em;
+  --margin-padding-medium: 1.5em;
+  --margin-padding-small: 1em;
+  --margin-padding-xsmall: .5em;
+
+  --font-size-large: 3.2em;
+  --font-size-medium: 1.5em;
+  --font-size-small: 1em;
+  --font-size-xsmall: .8em;
+  --font-size-xxsmall: .6em;
+  --font-weight-normal: 500;
+  --font-weight-bold: 700;
+  --font-family: 'Arial', sans-serif;
+  --font-family-mono: 'Courier New', monospace;
+  --font-family-serif: 'Times New Roman', serif;
+  --line-height: 1.5;
+  --text-decoration: none;
+  --text-transform: none;
+
+
+}
