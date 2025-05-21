@@ -11,27 +11,24 @@ export default function AdminInbox() {
 
   return (
     <Container fluid className="main-container-fluid p-0">
-      <Row className="Main-admin-inbox g-0">
-        {/* Sidebar Column - Fixed 25% width */}
-        <Col xs={12} md={3} lg={3} xl={2} className="Sidebar-admin-inbox">
-          <div className="sidebar-header">
-            <h4>Inbox</h4>
-          </div>
+      <Row className="g-0" style={{ height: '100vh' }}>
+        
+        {/* Sidebar - Inbox */}
+        <Col xs={12} md={3} lg={3} xl={2} className="border-end bg-white">
          
           <InboxSidebar
             selectedId={selectedThread?.id}
             onSelect={setSelectedThread}
-            className="inbox-items"
           />
         </Col>
-        
-        {/* Chat Panel Column - Fixed 50% width */}
-        <Col xs={12} md={6} lg={6} xl={6} className="Chat-panel">
-          <div className="Chat-panel-header">
+
+        {/* Conversation Panel */}
+        <Col xs={12} md={6} lg={6} xl={6} className="d-flex flex-column">
+          <div className="d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
             {selectedThread ? (
               <>
-                <h5>{selectedThread.subject || 'Conversation'}</h5>
-                <div className="actions">
+                <h6 className="mb-0">{selectedThread.subject || 'Conversation'}</h6>
+                <div className="d-flex gap-2">
                   <Button variant="link" title="Assign" className="p-1">
                     <i className="fas fa-user-plus"></i>
                   </Button>
@@ -44,53 +41,41 @@ export default function AdminInbox() {
                 </div>
               </>
             ) : (
-              <h5>Select a conversation</h5>
+              <h6 className="mb-0">Select a conversation</h6>
             )}
           </div>
-          <div className="Chat-panel-body">
+
+          <div className="flex-grow-1 overflow-auto px-3 py-2">
             <ConversationThread thread={selectedThread} />
           </div>
-          <div className="Chat-panel-footer">
-            <div className="reply-box">
-              <div className="reply-box-actions">
-                <Button variant="link" title="Attach file" className="p-1">
-                  <i className="fas fa-paperclip"></i>
-                </Button>
-                <Button variant="link" title="Insert template" className="p-1">
-                  <i className="fas fa-file-alt"></i>
-                </Button>
-                <Button variant="link" title="Insert emoji" className="p-1">
-                  <i className="fas fa-smile"></i>
-                </Button>
-              </div>
-              <ReplyBox />
+
+          <div className="border-top px-3 py-2">
+            <div className="d-flex align-items-center mb-2 gap-2">
+              <Button variant="link" title="Attach file" className="p-1">
+                <i className="fas fa-paperclip"></i>
+              </Button>
+              <Button variant="link" title="Insert template" className="p-1">
+                <i className="fas fa-file-alt"></i>
+              </Button>
+              <Button variant="link" title="Insert emoji" className="p-1">
+                <i className="fas fa-smile"></i>
+              </Button>
             </div>
+            <ReplyBox />
           </div>
         </Col>
-        
-        {/* Copilot Panel Column - Fixed 25% width */}
-        <Col xs={12} md={3} lg={3} xl={4} className="Copilot-panel">
-          <div className="copilot-header">
-            <h4>AI Copilot</h4>
-          </div>
-          <div className="copilot-content">
-            {selectedThread ? (
-              <AICopilotPanel thread={selectedThread} />
-            ) : (
-              <div className="ai-suggestion">
-                <div className="ai-suggestion-header">
-                  <div className="ai-suggestion-title">
-                    <i className="fas fa-robot"></i> AI Assistant
-                  </div>
-                </div>
-                <div className="ai-suggestion-content">
-                  <p>Select a conversation to get AI-powered suggestions and customer insights.</p>
-                </div>
-              </div>
-            )}
-            
-           
-          </div>
+
+        {/* AI Copilot */}
+        <Col xs={12} md={3} lg={3} xl={4} className="bg-light border-start p-3">
+          <h6 className="fw-bold">AI Copilot</h6>
+          {selectedThread ? (
+            <AICopilotPanel thread={selectedThread} />
+          ) : (
+            <div className="text-muted mt-3">
+              <i className="fas fa-robot me-2"></i>
+              Select a conversation to get AI suggestions.
+            </div>
+          )}
         </Col>
       </Row>
     </Container>

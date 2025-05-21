@@ -1,5 +1,5 @@
 .main-container-fluid{
-    margin:var(--margin-padding-medium) 0;
+    margin: 0;
     padding: var(--margin-padding-large);
     width:100vw;
       height: 100vh;
@@ -11,7 +11,7 @@
 .Sidebar-admin-inbox {
   background-color: #fff;
   border-right: 1px solid #ddd;
-  padding: 1rem 1rem;
+  padding: 1rem 2px 1rem 15px;
   height: 100vh;
   overflow-y: auto;
   box-sizing: border-box;
@@ -159,3 +159,27 @@
   }
 }
 
+.ai-copilot-wrapper {
+  background: #fff;
+  border-left: 1px solid #e2e8f0;
+  height: 100%;
+}
+
+.suggestion-box {
+  background-color: #f9fafb;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion-box:hover {
+  background-color: #eef3ff;
+}
+
+.ask-box input {
+  border-right: none;
+}
+
+.ask-box button {
+  border-left: none;
+}
