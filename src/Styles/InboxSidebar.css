@@ -41,3 +41,12 @@
   color:black;
   /* border-left: 3px solid #007bff; */
 }
+.conversation-thread {
+  height: calc(100vh - 180px); /* adjust based on header/footer height */
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+.user-chat div p{ 
+    background: red;
+}
