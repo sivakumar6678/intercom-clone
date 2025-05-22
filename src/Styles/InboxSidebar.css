@@ -37,7 +37,7 @@
 }
 
 .list-item-inbox.active {
-  background-color: #b3c8e7ce;
+  background-color: var(--color-background-lighter);
   color:black;
   /* border-left: 3px solid #007bff; */
 }
@@ -48,5 +48,15 @@
   border-radius: 8px;
 }
 .user-chat div p{ 
-    background: red;
+  border-radius: 10px;
+  padding:var(--margin-padding-small);
+    /* background: red; */
+}
+.user-chat .bg-primary-custome{
+  background-color: var(--color-background-light);
+  color: rgb(0, 0, 0);
+}
+.user-chat .bg-light-custome{
+  background-color: var(--color-background-gray);
+  color: rgb(0, 0, 0);
 }

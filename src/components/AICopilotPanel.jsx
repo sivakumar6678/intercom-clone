@@ -1,37 +1,44 @@
-import { Card, InputGroup, FormControl, Button } from 'react-bootstrap';
-import '../Styles/Admin.css';
+import { Button, Form, Nav } from 'react-bootstrap';
 
 export default function AICopilotPanel({ thread }) {
   return (
-    <div className="ai-copilot-wrapper p-3 h-100 d-flex flex-column justify-content-between">
-      {/* Top section */}
-      <div>
-        <div className="mb-3 text-center">
-          <i className="fas fa-robot fa-2x text-primary mb-2"></i>
-          <h5 className="fw-bold">Hi, I'm Fin AI Copilot</h5>
-          <p className="text-muted small">
-            Ask me anything about this conversation.
-          </p>
-        </div>
+    <div className="d-flex flex-column h-100">
+      {/* Tab header */}
+      <Nav variant="tabs" defaultActiveKey="copilot" className="mb-3">
+        <Nav.Item>
+          <Nav.Link eventKey="copilot" active>AI Copilot</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="details" disabled>Details</Nav.Link>
+        </Nav.Item>
+      </Nav>
 
-        {/* Suggested question */}
-        <div className="suggested-question mt-4">
-          <strong className="small">Suggested 💡</strong>
-          <div className="suggestion-box mt-2 p-2 rounded border">
-            How do I get a refund?
+      {/* If thread selected */}
+      {thread ? (
+        <>
+          <div className="text-muted mb-3">
+            👋 Hi, I'm Fin AI Copilot. Ask me anything about this conversation.
           </div>
-        </div>
-      </div>
 
-      {/* Ask box */}
-      <div className="ask-box mt-4">
-        <InputGroup>
-          <FormControl placeholder="Ask a question..." />
-          <Button variant="primary">
-            <i className="fas fa-arrow-right"></i>
+          {/* Suggested question */}
+          <Button variant="light" size="sm" className="mb-3">
+            💬 How do I get a refund?
           </Button>
-        </InputGroup>
-      </div>
+
+          {/* Ask input at bottom */}
+          <div className="mt-auto">
+            <Form className="d-flex align-items-center">
+              <Form.Control type="text" placeholder="Ask a question..." />
+              <Button variant="primary" className="ms-2">→</Button>
+            </Form>
+          </div>
+        </>
+      ) : (
+        <div className="text-muted mt-3">
+          <i className="fas fa-robot me-2"></i>
+          Select a conversation to get AI suggestions.
+        </div>
+      )}
     </div>
   );
 }

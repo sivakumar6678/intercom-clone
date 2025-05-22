@@ -6,6 +6,10 @@
   --color-border: rgba(0, 0, 0, .7);
   --color-border-hover: #646cff;
   --color-border-focus: #646cff;
+  --color-background-light: #8bb2ecce;
+  --color-background-lighter: #b4d0fc9c;
+  --color-background-gray: rgba(221, 221, 221, 0.89);
+
 
   --margin-padding-large: 2em;
   --margin-padding-medium: 1.5em;

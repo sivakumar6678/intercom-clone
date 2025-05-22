@@ -1,4 +1,4 @@
-import { Form } from 'react-bootstrap';
+import { Form,Button } from 'react-bootstrap';
 import { useState } from 'react';
 
 export default function ReplyBox() {
@@ -13,23 +13,18 @@ export default function ReplyBox() {
 
   return (
     <div className="reply-box-input">
-      <Form className="w-100" onSubmit={handleSubmit}>
-        <Form.Control 
-          as="textarea" 
-          value={replyText}
-          onChange={(e) => setReplyText(e.target.value)}
-          placeholder="Type your reply..." 
-          className="reply-textarea"
-        />
-      </Form>
-      <button 
-        className="send" 
-        onClick={handleSubmit}
-        disabled={!replyText.trim()}
-        title="Send message"
-      >
-        <i className="fas fa-paper-plane"></i>
-      </button>
+      {/* Chat Input Footer */}
+<div className="border-top p-3">
+  <Form className="d-flex align-items-center">
+    <Form.Control
+      type="text"
+      placeholder="Type your message..."
+      className="me-2"
+    />
+    <Button variant="primary">Send</Button>
+  </Form>
+</div>
+
     </div>
   );
 }
