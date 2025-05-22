@@ -1,56 +1,62 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button, Form, Nav, Spinner } from 'react-bootstrap';
-import '../Styles/Aicopilot.css';
-
+import ReactMarkdown from 'react-markdown';
+import { getGeminiReply } from '../data/api';
 export default function AICopilotPanel({ thread }) {
+  const scrollRef = useRef(null);
   const [question, setQuestion] = useState('');
+  const [qaHistory, setQaHistory] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [qaHistory, setQaHistory] = useState([]); // Stores all Q&A
 
-  const handleAsk = async (e) => {
-    e.preventDefault();
-    if (!question.trim()) return;
+  const storageKey = `copilot-history-${thread?.id || 'default'}`;
+
+  // Load from localStorage
+  useEffect(() => {
+    if (thread) {
+      const saved = localStorage.getItem(storageKey);
+      setQaHistory(saved ? JSON.parse(saved) : []);
+    }
+  }, [thread]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [qaHistory]);
+
+  // Save to localStorage
+  useEffect(() => {
+    if (thread) {
+      localStorage.setItem(storageKey, JSON.stringify(qaHistory));
+    }
+  }, [qaHistory, thread]);
+
+  const handleAsk = async (e, override = null) => {
+    e?.preventDefault();
+    const query = override || question;
+    if (!query.trim()) return;
 
     setLoading(true);
-
     try {
-      const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
-          import.meta.env.VITE_GEMINI_API_KEY,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: `You are a support AI assistant. Here's the user question: "${question}". Base your answer using this context:\n${thread.messages
-                      .map((m) => `${m.from}: ${m.text}`)
-                      .join('\n')}`,
-                  },
-                ],
-              },
-            ],
-          }),
-        }
-      );
+     
 
-      const data = await res.json();
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
+     const reply = await getGeminiReply(query, thread.messages);
+     setQaHistory((prev) => [...prev, { question: query, answer: reply }]);
 
-      // Save Q&A
-      setQaHistory((prev) => [...prev, { question, answer: reply }]);
-      setQuestion('');
+      if (!override) setQuestion('');
     } catch (err) {
       console.error(err);
-      setQaHistory((prev) => [...prev, { question, answer: '❌ Error contacting Gemini API.' }]);
+      setQaHistory((prev) => [...prev, { question: query, answer: '❌ Error contacting Gemini API.' }]);
     } finally {
       setLoading(false);
     }
   };
+
+  const promptTemplates = [
+    'Summarize this conversation',
+    'What are the main concerns from this user?',
+    'Draft a polite follow-up message',
+    'Translate to Hindi',
+  ];
 
   return (
     <div className="d-flex flex-column h-100">
@@ -71,23 +77,37 @@ export default function AICopilotPanel({ thread }) {
       {thread ? (
         <>
           <div className="text-muted mb-3">
-            👋 Hi, I'm Fin AI Copilot. Ask me anything about this conversation.
+            👋 Hi, I'm Fin AI Copilot. Ask me anything or use a quick prompt.
           </div>
 
-          {/* Q&A history */}
-          <div className="overflow-auto mb-3" style={{ maxHeight: '80vh' }}>
+          {/* Prompt Templates */}
+          <div className="d-flex flex-wrap gap-2 mb-3">
+            {promptTemplates.map((prompt, idx) => (
+              <Button
+                key={idx}
+                variant="outline-secondary"
+                size="sm"
+                onClick={(e) => handleAsk(e, prompt)}
+              >
+                {prompt}
+              </Button>
+            ))}
+          </div>
+
+          {/* History */}
+          <div className="overflow-auto mb-3" style={{ maxHeight: '70vh' }}>
             {qaHistory.map((item, index) => (
               <div key={index} className="mb-3">
                 <div className="bg-light border rounded p-2 mb-1">
-                  <span className='text-right float-end clear-both d-flex '>
-                    {item.question} <strong>You</strong> 
-                  </span>
+                  <strong>You:</strong> {item.question}
                 </div>
-                <div className="bg-primary text-white rounded p-2" clear-both >
-                  <strong>Copilot:</strong> {item.answer}
+                <div className="bg-primary text-white rounded p-2">
+                  <strong>Copilot:</strong>{' '}
+                  <ReactMarkdown>{item.answer}</ReactMarkdown>
                 </div>
               </div>
             ))}
+            <div ref={scrollRef} />
           </div>
 
           {/* Ask input */}
