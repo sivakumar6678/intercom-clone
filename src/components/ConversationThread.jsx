@@ -42,9 +42,9 @@ export default function ConversationThread({ thread }) {
                 <div
                   className={`p-2 rounded-3 ${
                     isUser ? 'bg-light-custome text-dark' : 'bg-primary-custome'
-                  }`}
+                  } selectable-text`}
                 >
-                  <p className="mb-1">{msg.text}</p>
+                  <p className="mb-1 selectable-text">{msg.text}</p>
                 </div>
                 <div
                   className={`small text-muted mt-1 ${

@@ -71,7 +71,19 @@ export default function AdminInbox() {
               <Button variant="link" title="Insert emoji" className="p-1 text-muted">
                 <i className="fas fa-smile"></i>
               </Button>
-              <Button variant="link" title="AI Assistant" className="p-1 text-primary">
+              <Button 
+                variant="link" 
+                title="AI Assistant" 
+                className="p-1 text-primary"
+                onClick={() => {
+                  // Find the AICopilotPanel component and set its activeTab to 'copilot'
+                  const aiCopilotPanel = document.querySelector('.ai-copilot-panel');
+                  if (aiCopilotPanel) {
+                    const copilotTab = aiCopilotPanel.querySelector('.nav-link[data-tab="copilot"]');
+                    if (copilotTab) copilotTab.click();
+                  }
+                }}
+              >
                 <i className="fas fa-magic"></i>
               </Button>
             </div>

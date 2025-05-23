@@ -1,189 +1,83 @@
-import { Form, Button, Card, Spinner, ButtonGroup, Tabs, Tab } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { generateDraftSuggestion, refineDraftWithTone } from '../data/api';
+import { Form, Button } from 'react-bootstrap';
+import { useState, useEffect, useRef } from 'react';
 
 export default function ReplyBox({ thread }) {
   const [replyText, setReplyText] = useState('');
-  const [aiDraft, setAiDraft] = useState('');
-  const [selectedTone, setSelectedTone] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [showRefinementPanel, setShowRefinementPanel] = useState(false);
-  const [activeTab, setActiveTab] = useState('compose');
+  const textareaRef = useRef(null);
 
-  // Generate initial draft when thread changes
+  // This effect allows external components to update the textarea value
   useEffect(() => {
-    if (thread?.messages?.length > 0) {
-      generateInitialDraft();
+    if (textareaRef.current) {
+      // Listen for input events that might be triggered by other components
+      const handleInputEvent = (e) => {
+        setReplyText(e.target.value);
+      };
+      
+      textareaRef.current.addEventListener('input', handleInputEvent);
+      
+      return () => {
+        textareaRef.current?.removeEventListener('input', handleInputEvent);
+      };
     }
-  }, [thread]);
-
-  const generateInitialDraft = async () => {
-    if (!thread?.messages?.length) return;
-    
-    setIsLoading(true);
-    setShowRefinementPanel(true);
-    try {
-      const draft = await generateDraftSuggestion(thread.messages);
-      setAiDraft(draft);
-      setSelectedTone('');
-    } catch (error) {
-      console.error('Error generating draft:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleToneChange = async (tone) => {
-    if (selectedTone === tone) return;
-    
-    setIsLoading(true);
-    setSelectedTone(tone);
-    try {
-      const refinedDraft = await refineDraftWithTone(aiDraft, tone, thread?.messages || []);
-      setAiDraft(refinedDraft);
-    } catch (error) {
-      console.error('Error refining draft:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddToComposer = () => {
-    setReplyText(aiDraft);
-    setActiveTab('compose');
-  };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!replyText.trim()) return;
+    
     // Handle the reply submission here
     console.log('Sending reply:', replyText);
+    
+    // Add the message to the thread
+    if (thread && thread.messages) {
+      const newMessage = {
+        id: Date.now().toString(),
+        from: 'agent',
+        text: replyText,
+        timestamp: new Date().toISOString()
+      };
+      
+      // In a real app, you would update the thread in your state management
+      console.log('Adding message to thread:', newMessage);
+    }
+    
     setReplyText('');
-  };
-
-  const handleRegenerateDraft = async () => {
-    await generateInitialDraft();
   };
 
   return (
     <div className="reply-box-input">
-      <Tabs
-        activeKey={activeTab}
-        onSelect={(k) => setActiveTab(k)}
-        className="mb-3 reply-box-tabs"
-      >
-        <Tab eventKey="compose" title="Compose">
-          {/* Chat Input Footer */}
-          <div className="p-2">
-            <Form className="d-flex align-items-center" onSubmit={handleSubmit}>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Type your message..."
-                className="me-2"
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-              />
-              <div className="d-flex flex-column">
-                <Button type="submit" variant="primary" className="mb-2">
-                  Send
-                </Button>
-                <Button 
-                  variant="outline-secondary" 
-                  size="sm"
-                  onClick={() => setActiveTab('ai-assist')}
-                >
-                  <i className="fas fa-magic me-1"></i> AI Assist
-                </Button>
-              </div>
-            </Form>
-          </div>
-        </Tab>
-        
-        <Tab eventKey="ai-assist" title="AI Assistant">
-          {/* AI Message Refinement Panel */}
-          <div className="p-2">
-            {isLoading ? (
-              <div className="text-center py-3">
-                <Spinner animation="border" variant="primary" />
-                <p className="mt-2 text-muted">Generating suggestion...</p>
-              </div>
-            ) : (
-              <div className="mb-3">
-                <div className="draft-content bg-light-custome mb-3 p-3 rounded">
-                  <ReactMarkdown>{aiDraft}</ReactMarkdown>
-                </div>
-                
-                <div className="d-flex flex-wrap gap-2 mb-3">
-                  <ButtonGroup className="me-2">
-                    <Button 
-                      variant={selectedTone === 'polish' ? 'primary' : 'outline-primary'} 
-                      size="sm"
-                      onClick={() => handleToneChange('polish')}
-                      className={`tone-button ${selectedTone === 'polish' ? 'active' : ''}`}
-                    >
-                      ✨ Polish
-                    </Button>
-                    <Button 
-                      variant={selectedTone === 'elaborate' ? 'primary' : 'outline-primary'} 
-                      size="sm"
-                      onClick={() => handleToneChange('elaborate')}
-                      className={`tone-button ${selectedTone === 'elaborate' ? 'active' : ''}`}
-                    >
-                      📖 Elaborate
-                    </Button>
-                    <Button 
-                      variant={selectedTone === 'summarize' ? 'primary' : 'outline-primary'} 
-                      size="sm"
-                      onClick={() => handleToneChange('summarize')}
-                      className={`tone-button ${selectedTone === 'summarize' ? 'active' : ''}`}
-                    >
-                      🧠 Summarize
-                    </Button>
-                  </ButtonGroup>
-                  
-                  <ButtonGroup>
-                    <Button 
-                      variant={selectedTone === 'friendly' ? 'primary' : 'outline-primary'} 
-                      size="sm"
-                      onClick={() => handleToneChange('friendly')}
-                      className={`tone-button ${selectedTone === 'friendly' ? 'active' : ''}`}
-                    >
-                      🗣️ Friendly
-                    </Button>
-                    <Button 
-                      variant={selectedTone === 'professional' ? 'primary' : 'outline-primary'} 
-                      size="sm"
-                      onClick={() => handleToneChange('professional')}
-                      className={`tone-button ${selectedTone === 'professional' ? 'active' : ''}`}
-                    >
-                      💼 Professional
-                    </Button>
-                  </ButtonGroup>
-                </div>
-                
-                <div className="d-flex justify-content-between">
-                  <Button 
-                    variant="outline-secondary" 
-                    size="sm"
-                    onClick={handleRegenerateDraft}
-                  >
-                    <i className="fas fa-sync-alt me-1"></i> Regenerate
-                  </Button>
-                  
-                  <Button 
-                    variant="primary" 
-                    size="sm"
-                    onClick={handleAddToComposer}
-                  >
-                    <i className="fas fa-plus me-1"></i> Add to Composer
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </Tab>
-      </Tabs>
+      <Form onSubmit={handleSubmit}>
+        <div className="position-relative">
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder="Type your message..."
+            className="reply-textarea selectable-text pe-5"
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+            ref={textareaRef}
+          />
+          <Button 
+            type="submit" 
+            variant="primary" 
+            className="position-absolute"
+            style={{ bottom: '10px', right: '10px', borderRadius: '50%', width: '40px', height: '40px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            disabled={!replyText.trim()}
+          >
+            <i className="fas fa-paper-plane"></i>
+          </Button>
+        </div>
+        <div className="d-flex justify-content-between align-items-center mt-2">
+          <small className="text-muted">
+            <i className="fas fa-info-circle me-1"></i>
+            Select text for AI refinement options
+          </small>
+          <small className="text-primary">
+            <i className="fas fa-keyboard me-1"></i>
+            Press Enter to send
+          </small>
+        </div>
+      </Form>
     </div>
   );
 }

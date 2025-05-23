@@ -6,6 +6,7 @@ export const emailThreads = [
       avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=L'    },
       subject: 'Luis Easton',
       preview: 'Hey! I have a question...',
+      email: 'luis.easton@example.com',
       time: '45m',
       unread: false, 
       messages: [
