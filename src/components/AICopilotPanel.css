@@ -1,0 +1,443 @@
+/* AICopilotPanel Styles */
+
+/* Main panel container */
+.ai-copilot-panel {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* User message bubble */
+.user-message-bubble {
+  background-color: #e9ecef;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 75%;
+  align-self: flex-end;
+  margin-left: auto;
+  margin-bottom: 10px;
+}
+
+/* User message bubble with custom margins */
+.user-message-bubble-custom {
+  background-color: #e9ecef;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 75%;
+  align-self: flex-end;
+  margin-left: auto;
+  margin-bottom: 5px;
+}
+
+.user-message-bubble-custom.mt-3 {
+  margin-top: 15px;
+}
+
+/* AI message container */
+.ai-message-container {
+  margin-bottom: 20px;
+  max-width: 100%;
+}
+
+/* AI message wrapper */
+.ai-message-wrapper {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  max-width: 100%;
+}
+
+/* AI message content */
+.ai-message-content {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 48px);
+  max-width: 100%;
+}
+
+/* AI message bubble */
+.ai-message-bubble {
+  background: linear-gradient(135deg, #f2e8ff 0%, #e6d9ff 100%);
+  padding: 12px 18px;
+  border-radius: 18px;
+  border: 1px solid #d1b3ff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  color: #333;
+  margin-bottom: 8px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Loading message bubble */
+.loading-message-bubble {
+  background: linear-gradient(135deg, #f2e8ff 0%, #e6d9ff 100%);
+  padding: 12px 18px;
+  border-radius: 18px;
+  border: 1px solid #d1b3ff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  color: #333;
+  margin-bottom: 8px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Loading gradient animation */
+.loading-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,192,203,0.4) 20%, rgba(173,216,230,0.4) 40%, rgba(216,191,216,0.4) 60%, rgba(152,251,152,0.4) 80%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: loadingShimmer 3s infinite linear;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* AI message header */
+.ai-message-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* AI header */
+.ai-header {
+  font-weight: 600;
+  color: #50278F;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+}
+
+/* AI avatar */
+.ai-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #6f42c1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+/* User question in AI response */
+.user-question-in-ai-response {
+  font-style: italic;
+  color: #6c757d;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+/* Loading animation container */
+.loading-animation {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Thinking dots container */
+.thinking-dots {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+/* Individual thinking dot */
+.thinking-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #6f42c1;
+  margin: 0 3px;
+  animation: thinkingBounce 1.4s infinite ease-in-out both;
+}
+
+/* First dot animation delay */
+.thinking-dot-1 {
+  animation-delay: -0.32s;
+}
+
+/* Second dot animation delay */
+.thinking-dot-2 {
+  animation-delay: -0.16s;
+}
+
+/* Sources section */
+.sources-section {
+  margin-top: 12px;
+  padding: 10px;
+  background-color: rgba(230, 217, 255, 0.2);
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+/* Sources header */
+.sources-header {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+/* Source item */
+.source-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  color: #444;
+  cursor: pointer;
+}
+
+/* Source icon */
+.source-icon {
+  margin-right: 8px;
+  color: #6f42c1;
+}
+
+/* See all link */
+.see-all-link {
+  display: block;
+  margin-top: 8px;
+  color: #6f42c1;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+/* Sources list */
+.sources-list {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Source link */
+.source-link {
+  color: #6f42c1;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+/* Chat history container */
+.chat-history {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding-right: 10px;
+  min-height: 100px;
+}
+
+/* Input form */
+.input-form {
+  padding: 15px;
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  flex: 0 0 auto;
+}
+
+/* Input field */
+.input-field {
+  border-radius: 20px;
+  border-color: #ced4da;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 100%;
+  line-height: 1.5;
+  outline: none;
+  box-shadow: none;
+  border: 1px solid #ced4da;
+  color: black;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  resize: none;
+  height: auto;
+  min-height: 40px;
+  max-height: 150px;
+  overflow: auto;
+  padding-right: 30px;
+  background-color: #ffffff;
+}
+
+/* Send button */
+.send-button {
+  background-color: #6f42c1;
+  border-color: #6f42c1;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add to composer button */
+.add-to-composer-button {
+  background-color: white;
+  color: #50278F;
+  border: 1px solid #d1b3ff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.add-to-composer-button.w-100 {
+  flex: 1;
+}
+
+.add-to-composer-button.dropdown-toggle {
+  margin-left: 1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Text selection menu */
+.text-selection-menu {
+  position: absolute;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  padding: 5px;
+  z-index: 1050;
+  transform: translate(-50%, -110%);
+}
+
+/* Text menu button */
+.text-menu-button {
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* Processing indicator */
+.processing-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+}
+
+/* Text menu */
+.text-menu {
+  position: absolute;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Text menu button */
+.text-menu-btn {
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.text-menu-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Animated markdown container */
+.animated-markdown {
+  position: relative;
+  width: 100%;
+}
+
+/* Typing content */
+.typing-content {
+  position: relative;
+  width: 100%;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+/* Typing cursor */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background-color: #6f42c1;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+/* Message content */
+.message-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  word-break: break-word;
+}
+
+/* Keyframe animations */
+@keyframes thinkingBounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}
+
+@keyframes loadingShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes typing {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes blink-caret {
+  from, to { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* Ctrl+Enter hint */
+.ctrl-enter-hint {
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+  font-size: 0.7rem;
+  color: #6c757d;
+}
+
+/* Input container */
+.input-container {
+  position: relative;
+  flex-grow: 1;
+  margin-right: 0.5rem;
+}
+
+/* Nav tabs */
+.nav-tabs-fixed {
+  flex: 0 0 auto;
+}

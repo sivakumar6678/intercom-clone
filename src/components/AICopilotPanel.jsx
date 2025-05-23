@@ -3,93 +3,94 @@ import { Button, Form, Nav, Spinner, Card, ButtonGroup, Dropdown } from 'react-b
 import ReactMarkdown from 'react-markdown';
 // Import the real API functions
 import { getGeminiReply, refineDraftWithTone } from '../data/api';
+// Import CSS
+import './AICopilotPanel.css';
 
 // Custom component for animated markdown rendering with typing effect
-const AnimatedMarkdown = ({ text, isLoading }) => {
-  const [displayedLines, setDisplayedLines] = useState([]);
-  const [isTyping, setIsTyping] = useState(true);
+const AnimatedMarkdown = ({ text, isLoading, isNewMessage = false }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [currentParagraphIndex, setCurrentParagraphIndex] = useState(0);
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   
   // Memoize the paragraphs to prevent recalculation on every render
   const paragraphs = useRef([]);
   
-  // Only update paragraphs when text changes
+  // Check if this is a new message that should be animated
   useEffect(() => {
+    // Only animate if this is a loading message or explicitly marked as new
+    const shouldAnimateMessage = isLoading || isNewMessage;
+    setShouldAnimate(shouldAnimateMessage);
+    
+    // If it's not a new message, just display the full text immediately
+    if (!shouldAnimateMessage) {
+      setDisplayedText(text || '');
+      setIsTyping(false);
+      return;
+    }
+    
+    // For new messages, prepare for animation
     paragraphs.current = text ? text.split('\n\n').filter(p => p.trim() !== '') : [];
-  }, [text]);
+    setDisplayedText('');
+    setCurrentParagraphIndex(0);
+    setCurrentCharIndex(0);
+    setIsTyping(true);
+  }, [text, isLoading, isNewMessage]);
   
-  // Handle the typing animation
+  // Handle the character-by-character typing animation
   useEffect(() => {
+    if (!shouldAnimate || !text || paragraphs.current.length === 0) return;
+    
     // Create a flag to track if the component is still mounted
     let isMounted = true;
     
-    // Reset when new text comes in
-    if (isMounted) {
-      setDisplayedLines([]);
-      setIsTyping(true);
-    }
-    
-    if (paragraphs.current.length > 0) {
-      // Display paragraphs one by one with a delay
-      let currentIndex = 0;
-      const typingInterval = setInterval(() => {
-        if (!isMounted) {
-          clearInterval(typingInterval);
-          return;
-        }
+    // Function to type the next character
+    const typeNextChar = () => {
+      if (!isMounted) return;
+      
+      if (currentParagraphIndex < paragraphs.current.length) {
+        const currentParagraph = paragraphs.current[currentParagraphIndex];
         
-        if (currentIndex < paragraphs.current.length) {
-          setDisplayedLines(prev => [...prev, paragraphs.current[currentIndex]]);
-          currentIndex++;
+        if (currentCharIndex < currentParagraph.length) {
+          // Add the next character
+          setDisplayedText(prev => prev + currentParagraph[currentCharIndex]);
+          setCurrentCharIndex(prev => prev + 1);
         } else {
-          clearInterval(typingInterval);
-          if (isMounted) {
-            setIsTyping(false); // Stop typing animation when done
+          // Move to the next paragraph
+          if (currentParagraphIndex < paragraphs.current.length - 1) {
+            setDisplayedText(prev => prev + '\n\n');
+            setCurrentParagraphIndex(prev => prev + 1);
+            setCurrentCharIndex(0);
+          } else {
+            // All paragraphs are typed
+            setIsTyping(false);
+            return;
           }
         }
-      }, 800); // Delay between paragraphs
-      
-      return () => {
-        isMounted = false;
-        clearInterval(typingInterval);
-      };
-    } else if (text && text.trim() !== '') {
-      // If there are no paragraphs but there is text, show it all at once
-      if (isMounted) {
-        setDisplayedLines([text]);
       }
-      
-      const timer = setTimeout(() => {
-        if (isMounted) {
-          setIsTyping(false);
-        }
-      }, 800);
-      
-      return () => {
-        isMounted = false;
-        clearTimeout(timer);
-      };
-    }
+    };
+    
+    // Calculate typing speed - faster for longer text
+    const baseSpeed = 20; // Base speed in milliseconds
+    const speedFactor = Math.min(1, 500 / text.length); // Adjust speed based on text length
+    const typingSpeed = baseSpeed / speedFactor;
+    
+    // Set up the typing interval
+    const typingInterval = setInterval(typeNextChar, typingSpeed);
     
     return () => {
       isMounted = false;
+      clearInterval(typingInterval);
     };
-  }, [text]); // Only depend on text, not paragraphs
+  }, [text, currentParagraphIndex, currentCharIndex, shouldAnimate]);
   
   return (
-    <div>
-      {displayedLines.map((paragraph, index) => (
-        <div 
-          key={index} 
-          className="typing-line"
-          style={{ 
-            marginBottom: '10px',
-            // Add a blinking cursor to the last paragraph if still typing
-            borderRight: (isTyping && index === displayedLines.length - 1) ? '2px solid #6f42c1' : 'none',
-          }}
-        >
-          <ReactMarkdown>{paragraph}</ReactMarkdown>
-        </div>
-      ))}
+    <div className="animated-markdown">
+      <div className={`typing-content ${isTyping ? 'typing' : ''}`}>
+        <ReactMarkdown>{shouldAnimate ? displayedText : text}</ReactMarkdown>
+        {isTyping && <span className="typing-cursor"></span>}
+      </div>
     </div>
   );
 };
@@ -238,6 +239,18 @@ export default function AICopilotPanel({ thread }) {
     if (thread) {
       localStorage.setItem(storageKey, JSON.stringify(qaHistory));
     }
+    
+    // Clear the isNewMessage flag after a message has been displayed for a while
+    const timer = setTimeout(() => {
+      setQaHistory(prev => 
+        prev.map(msg => ({
+          ...msg,
+          isNewMessage: false // Clear the isNewMessage flag
+        }))
+      );
+    }, 5000); // 5 seconds after a new message is added
+    
+    return () => clearTimeout(timer);
   }, [qaHistory, thread, storageKey]);
 
   // Handle text selection
@@ -382,6 +395,7 @@ export default function AICopilotPanel({ thread }) {
       timestamp: new Date().toISOString(),
       isLoading: true,
       isUser: false,
+      isNewMessage: true, // Mark as new message for animation
       sources: initialSources,
       relevantSourcesCount: initialSources.length
     };
@@ -414,6 +428,7 @@ export default function AICopilotPanel({ thread }) {
               ...msg,
               answer: reply,
               isLoading: false,
+              isNewMessage: true, // Keep the isNewMessage flag
               sources: sources,
               relevantSourcesCount: relevantSourcesCount,
               timestamp: new Date().toISOString()
@@ -443,6 +458,7 @@ export default function AICopilotPanel({ thread }) {
               ...msg,
               answer: '❌ Error contacting AI. Please try again.',
               isLoading: false,
+              isNewMessage: true, // Keep the isNewMessage flag
               error: true,
               sources: [], // Clear sources on error
               relevantSourcesCount: 0
@@ -475,239 +491,11 @@ export default function AICopilotPanel({ thread }) {
 
   // No prompt templates as per requirements
 
-  // Styles
-  const styles = {
-    aiCopilotPanel: {
-      fontFamily: "'Inter', sans-serif", // Matching typical modern UI font
-      backgroundColor: '#f8f9fa', // Light background for the panel
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh', // Full viewport height
-      maxHeight: '100vh',
-      overflow: 'hidden', // Prevent overall scrolling
-    },
-    userMessageBubble: {
-      backgroundColor: '#e9ecef', // A light grey for user messages
-      padding: '10px 15px',
-      borderRadius: '15px',
-      maxWidth: '75%',
-      alignSelf: 'flex-end',
-      marginLeft: 'auto', // Push to right
-      marginBottom: '10px',
-    },
-    aiMessageWrapper: {
-      display: 'flex',
-      alignItems: 'flex-start',
-      marginBottom: '20px',
-      maxWidth: '100%', // Take full width available to the wrapper
-    },
-    aiAvatar: {
-      width: '36px',
-      height: '36px',
-      borderRadius: '50%',
-      backgroundColor: '#6f42c1', // Purple, similar to "Fin"
-      color: 'white',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: '12px',
-      flexShrink: 0,
-    },
-    aiMessageContent: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: 'calc(100% - 48px)', // Adjust based on avatar size and margin
-      maxWidth: '100%', // Ensure it doesn't overflow
-    },
-    aiMessageBubble: {
-      background: 'linear-gradient(135deg, #f2e8ff 0%, #e6d9ff 100%)', // Softer purple gradient
-      padding: '12px 18px',
-      borderRadius: '18px',
-      border: '1px solid #d1b3ff',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-      color: '#333',
-      marginBottom: '8px',
-      width: '100%', // Make all bubbles full width
-      position: 'relative',
-      overflow: 'hidden',
-    },
-    loadingMessageBubble: {
-      background: 'linear-gradient(135deg, #f2e8ff 0%, #e6d9ff 100%)', // Same as regular bubble
-      padding: '12px 18px',
-      borderRadius: '18px',
-      border: '1px solid #d1b3ff',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-      color: '#333',
-      marginBottom: '8px',
-      width: '100%', // Full width
-      position: 'relative',
-      overflow: 'hidden',
-    },
-    loadingGradient: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,192,203,0.4) 20%, rgba(173,216,230,0.4) 40%, rgba(216,191,216,0.4) 60%, rgba(152,251,152,0.4) 80%, rgba(255,255,255,0) 100%)',
-      backgroundSize: '200% 100%',
-      animation: 'loadingShimmer 3s infinite linear',
-      zIndex: 1,
-      pointerEvents: 'none', // Make sure it doesn't interfere with text selection
-    },
-    '@keyframes loadingShimmer': {
-      '0%': { backgroundPosition: '-200% 0' },
-      '100%': { backgroundPosition: '200% 0' },
-    },
-    aiHeader: {
-      fontWeight: '600',
-      color: '#50278F', // Darker purple for "Copilot" text
-      fontSize: '0.95rem',
-      marginBottom: '5px',
-    },
-    addToComposerButton: {
-      backgroundColor: 'white',
-      color: '#50278F',
-      border: '1px solid #d1b3ff',
-      padding: '6px 12px',
-      borderRadius: '8px',
-      fontSize: '0.85rem',
-      fontWeight: '500',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-      transition: 'all 0.2s ease',
-    },
-    sourcesSection: {
-      marginTop: '12px',
-      padding: '10px',
-      backgroundColor: 'rgba(230, 217, 255, 0.2)', // Very light purple, semi-transparent
-      borderRadius: '12px',
-      fontSize: '0.85rem',
-    },
-    sourcesHeader: {
-      fontWeight: '500',
-      color: '#555',
-      marginBottom: '8px',
-    },
-    sourceItem: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '5px 0',
-      color: '#444',
-      cursor: 'pointer', // Indicate clickability
-    },
-    sourceIcon: {
-      marginRight: '8px',
-      color: '#6f42c1',
-    },
-    seeAllLink: {
-      display: 'block',
-      marginTop: '8px',
-      color: '#6f42c1',
-      fontWeight: '500',
-      textDecoration: 'none',
-      fontSize: '0.8rem',
-    },
-    chatHistory: {
-      flex: '1 1 auto', // Allow it to grow and shrink
-      overflow: 'auto', // Make it scrollable
-      paddingRight: '10px', // For scrollbar
-      minHeight: '100px', // Ensure there's always some space for chat
-    },
-    inputForm: {
-      padding: '15px',
-      borderTop: '1px solid #dee2e6',
-      backgroundColor: '#f8f9fa', // Consistent with panel background
-      flex: '0 0 auto', // Don't grow or shrink
-    },
-    inputField: {
-      borderRadius: '20px',
-      borderColor: '#ced4da',
-      paddingLeft: '15px',
-      paddingRight: '15px',
-      paddingTop: '10px',
-      paddingBottom: '10px',
-      width: '100%',
-      lineHeight: '1.5',
-      outline: 'none',
-      boxShadow: 'none',
-      border: '1px solid #ced4da',
-      color:'black',
-      transition: 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
-    },
-    sendButton: {
-      backgroundColor: '#6f42c1',
-      borderColor: '#6f42c1',
-      borderRadius: '50%',
-      width: '40px',
-      height: '40px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginLeft: '10px',
-    },
-     thinkingDots: {
-      display: 'flex',
-      alignItems: 'center',
-      marginLeft: '8px',
-    },
-    thinkingDot: {
-      width: '6px',
-      height: '6px',
-      backgroundColor: '#6f42c1', // Use a theme color
-      borderRadius: '50%',
-      margin: '0 2px',
-      animation: 'thinkingBounce 1.4s infinite ease-in-out both',
-    },
-    // Keyframes for thinking animation
-    '@keyframes thinkingBounce': {
-        '0%, 80%, 100%': { transform: 'scale(0)' },
-        '40%': { transform: 'scale(1.0)' }
-    },
-    // Add individual delays for dots
-    thinkingDot1: { animationDelay: '-0.32s' },
-    thinkingDot2: { animationDelay: '-0.16s' },
-    // Text selection menu styles
-    textSelectionMenu: {
-        position: 'absolute',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        display: 'flex',
-        padding: '5px',
-        zIndex: 1050, // Ensure it's above other content
-    },
-    textMenuButton: {
-        border: 'none',
-        background: 'none',
-        padding: '8px 12px',
-        cursor: 'pointer',
-        fontSize: '0.85rem',
-        color: '#333',
-        whiteSpace: 'nowrap', // Prevent button text from wrapping
-    },
-    processingIndicator: {
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        backgroundColor: 'white',
-        padding: '15px 20px',
-        borderRadius: '10px',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-        zIndex: 1060, // Above text selection menu
-        display: 'flex',
-        alignItems: 'center',
-    }
-  };
-  
-  // Apply thinking dot animation delays dynamically
-  if (styles.thinkingDot) { // Check if thinkingDot style exists
-    styles.thinkingDot1 = { ...styles.thinkingDot, animationDelay: '-0.32s' };
-    styles.thinkingDot2 = { ...styles.thinkingDot, animationDelay: '-0.16s' };
-  }
+
 
 
   return (
-    <div className="d-flex flex-column" style={styles.aiCopilotPanel}>
+    <div className="d-flex flex-column ai-copilot-panel">
       {/* Inject keyframes for animations */}
       <style>
         {`
@@ -739,7 +527,7 @@ export default function AICopilotPanel({ thread }) {
           .text-menu-btn:hover { background-color: #f0f0f0; }
         `}
       </style>
-      <Nav variant="tabs" className="px-3 pt-2" style={{ flex: '0 0 auto' }}>
+      <Nav variant="tabs" className="px-3 pt-2 nav-tabs-fixed">
         <Nav.Item>
           <Nav.Link active={activeTab === 'copilot'} onClick={() => setActiveTab('copilot')}>
             <i className="fas fa-robot me-2"></i>AI Copilot
@@ -758,7 +546,7 @@ export default function AICopilotPanel({ thread }) {
             {/* Prompt Templates removed as per requirements */}
 
             {/* Chat History */}
-            <div className="overflow-auto px-3 chat-history" style={styles.chatHistory}>
+            <div className="overflow-auto px-3 chat-history">
               {qaHistory.map((item, index) => (
                 <div key={index}>
                   {/* User's Question - Rendered as part of the AI response block in the new design */}
@@ -766,7 +554,7 @@ export default function AICopilotPanel({ thread }) {
                   {/* The new design implies user question is shown, then AI response follows. */}
                   {/* Let's display the user's question that led to this AI response */}
                    {item.isUser && (
-                     <div style={{ ...styles.userMessageBubble, marginBottom: '5px', marginTop: index > 0 ? '15px' : '0' }}>
+                     <div className={`user-message-bubble-custom ${index > 0 ? 'mt-3' : ''}`}>
                         <div className="fw-bold small text-muted mb-1">You</div>
                         <div>{item.question}</div>
                      </div>
@@ -774,23 +562,24 @@ export default function AICopilotPanel({ thread }) {
 
                   {/* AI Response */}
                   {(!item.isUser || item.isLoading) && ( // Show if it's an AI message or a user message waiting for AI
-                    <div style={styles.aiMessageWrapper}>
-                      <div style={styles.aiAvatar}>
+                    <div className="ai-message-wrapper">
+                      <div className="ai-avatar">
                         <i className="fas fa-robot"></i> {/* Or a custom Fin icon */}
                       </div>
-                      <div style={styles.aiMessageContent}>
-                        <div style={styles.aiHeader}>
+                      <div className="ai-message-content">
+                        <div className="ai-header">
                           Copilot {/* Changed from "Fin" to match existing code context */}
                         </div>
                         {/* Message bubble with typing animation effect */}
-                        <div style={item.isLoading ? styles.loadingMessageBubble : styles.aiMessageBubble} className="selectable-text">
+                        <div className={`selectable-text ${item.isLoading ? 'loading-message-bubble' : 'ai-message-bubble'}`}>
                           {/* Show gradient animation only when loading */}
-                          {item.isLoading && <div style={styles.loadingGradient}></div>}
-                          <div style={{ position: 'relative', zIndex: 2, width: '100%', wordBreak: 'break-word' }}>
+                          {item.isLoading && <div className="loading-gradient"></div>}
+                          <div className="message-content">
                             {item.answer ? (
                               <AnimatedMarkdown 
                                 text={item.answer} 
                                 isLoading={item.isLoading} 
+                                isNewMessage={item.isNewMessage || false}
                                 key={`answer-${index}`} 
                               />
                             ) : (
@@ -805,16 +594,15 @@ export default function AICopilotPanel({ thread }) {
                             <div className="mt-2 d-flex justify-content-start w-100">
                               <ButtonGroup className="w-100">
                                 <Button 
-                                  style={{...styles.addToComposerButton, flex: 1}}
+                                  className="add-to-composer-button w-100"
                                   onClick={() => handleAddToComposer(item.answer)}
-                                  className="w-100"
                                 >
                                   <i className="fas fa-plus me-1"></i> Add to composer
                                 </Button>
                                 <Dropdown as={ButtonGroup}>
                                   <Dropdown.Toggle 
                                     split 
-                                    style={{...styles.addToComposerButton, marginLeft: '1px', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                                    className="add-to-composer-button dropdown-toggle"
                                     id={`dropdown-actions-${index}`}
                                   />
                                   <Dropdown.Menu align="end">
@@ -833,19 +621,19 @@ export default function AICopilotPanel({ thread }) {
 
                         {/* Always show sources at the bottom if available */}
                         {item.sources && item.sources.length > 0 && (
-                          <div style={styles.sourcesSection}>
-                            <div style={styles.sourcesHeader}>
+                          <div className="sources-section">
+                            <div className="sources-header">
                               {item.relevantSourcesCount || item.sources.length} relevant source{item.sources.length === 1 ? '' : 's'} found
                             </div>
                             <ul className="list-unstyled mb-0">
                               {item.sources.slice(0, 3).map(src => ( // Show first 3
-                                <li key={src.id} style={styles.sourceItem} onClick={() => console.log("Source clicked:", src.title)}>
-                                  <i className="fas fa-file-alt" style={styles.sourceIcon}></i> {src.title}
+                                <li key={src.id} className="source-item" onClick={() => console.log("Source clicked:", src.title)}>
+                                  <i className="fas fa-file-alt source-icon"></i> {src.title}
                                 </li>
                               ))}
                             </ul>
                             {item.sources.length > 3 && (
-                              <a href="#" style={styles.seeAllLink} onClick={(e) => {e.preventDefault(); console.log("See all sources");}}>
+                              <a href="#" className="see-all-link" onClick={(e) => {e.preventDefault(); console.log("See all sources");}}>
                                 See all <i className="fas fa-arrow-right ms-1"></i>
                               </a>
                             )}
@@ -860,8 +648,8 @@ export default function AICopilotPanel({ thread }) {
             </div>
 
             {/* Ask input */}
-            <Form className="d-flex align-items-end" onSubmit={handleAsk} style={styles.inputForm}>
-              <div className="flex-grow-1 me-2 position-relative">
+            <Form className="d-flex align-items-end input-form" onSubmit={handleAsk}>
+              <div className="input-container">
                 <textarea
                   placeholder="Ask a follow up question..."
                   value={question}
@@ -878,34 +666,17 @@ export default function AICopilotPanel({ thread }) {
                     }
                   }}
                   disabled={loading}
-                  className="copilot-input w-100"
-                  style={{
-                    ...styles.inputField,
-                    resize: 'none',
-                    height: 'auto',
-                    minHeight: '40px',
-                    maxHeight: '150px',
-                    overflow: 'auto',
-                    paddingRight: '30px',
-                    backgroundColor: '#ffffff'
-                  }}
+                  className="copilot-input w-100 input-field"
                   ref={textareaRef}
                 />
-                <small 
-                  className="text-muted position-absolute" 
-                  style={{
-                    right: '10px',
-                    bottom: '5px',
-                    fontSize: '0.7rem'
-                  }}
-                >
+                <small className="text-muted position-absolute ctrl-enter-hint">
                   Ctrl+Enter
                 </small>
               </div>
               <Button 
                 type="submit" 
                 disabled={loading || !question.trim()}
-                style={styles.sendButton}
+                className="send-button"
               >
                 {loading ? (
                   <Spinner animation="border" size="sm" variant="light" />
@@ -938,25 +709,24 @@ export default function AICopilotPanel({ thread }) {
         {/* Text Selection Menu */}
         {showTextMenu && textMenuTarget && (
             <div 
+            className="text-selection-menu"
             style={{
-                ...styles.textSelectionMenu,
                 top: `${textMenuTarget.top}px`,
-                left: `${textMenuTarget.left}px`,
-                transform: 'translate(-50%, -110%)', // Adjust to appear above selection
+                left: `${textMenuTarget.left}px`
             }}
             >
-            <Button style={styles.textMenuButton} onClick={() => handleAddToCopilot()}>🤖 Add to Copilot</Button>
-            <Button style={styles.textMenuButton} onClick={() => handleTextAction('polish')}>✨ Polish</Button>
-            <Button style={styles.textMenuButton} onClick={() => handleTextAction('elaborate')}>📖 Elaborate</Button>
-            <Button style={styles.textMenuButton} onClick={() => handleTextAction('summarize')}>🧠 Summarize</Button>
-            <Button style={styles.textMenuButton} onClick={() => handleTextAction('friendly')}>🗣️ Friendly</Button>
-            <Button style={styles.textMenuButton} onClick={() => handleTextAction('professional')}>💼 Professional</Button>
+            <Button className="text-menu-button" onClick={() => handleAddToCopilot()}>🤖 Add to Copilot</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('polish')}>✨ Polish</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('elaborate')}>📖 Elaborate</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('summarize')}>🧠 Summarize</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('friendly')}>🗣️ Friendly</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('professional')}>💼 Professional</Button>
             </div>
         )}
 
         {/* Processing indicator for text actions */}
         {processingText && (
-            <div style={styles.processingIndicator}>
+            <div className="processing-indicator">
             <Spinner animation="border" size="sm" className="me-2" variant="primary" />
             <span className="text-primary fw-medium">Applying {textAction}...</span>
             </div>
