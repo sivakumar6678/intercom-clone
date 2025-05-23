@@ -92,7 +92,7 @@ export default function AdminInbox() {
         </Col>
 
         {/* AI Copilot */}
-        <Col xs={12} md={3} lg={3} xl={4} className="bg-light border-start d-flex flex-column p-3">
+        <Col xs={12} md={3} lg={3} xl={4} className="bg-light border-start d-flex flex-column">
           <AICopilotPanel thread={selectedThread} />
         </Col>
       </Row>

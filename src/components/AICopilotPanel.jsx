@@ -271,6 +271,54 @@ export default function AICopilotPanel({ thread }) {
     };
   }, []);
 
+  // Reference to the textarea element
+  const textareaRef = useRef(null);
+  
+  // Update textarea height when question changes
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Save the current scroll position of the chat container
+      const chatContainer = document.querySelector('.chat-history');
+      const scrollTop = chatContainer ? chatContainer.scrollTop : 0;
+      
+      // Reset height to calculate the new height
+      textarea.style.height = 'auto';
+      
+      // Set the new height based on content
+      const newHeight = Math.min(150, textarea.scrollHeight);
+      textarea.style.height = newHeight + 'px';
+      
+      // If chat container exists and we're expanding, maintain scroll position
+      if (chatContainer && newHeight > 40) {
+        chatContainer.scrollTop = scrollTop;
+      }
+    }
+  }, [question]);
+  
+  // Handle adding selected text to Copilot
+  const handleAddToCopilot = () => {
+    if (!selectedText) return;
+    
+    // Hide the text menu
+    setShowTextMenu(false);
+    
+    // Get the selected text
+    const textToAdd = selectedText;
+    
+    // Clear the selection
+    setSelectedText('');
+    
+    // Set the selected text as the question without submitting
+    setQuestion(textToAdd);
+    
+    // Focus the input field so the user can refine the text
+    const inputField = document.querySelector('.copilot-input');
+    if (inputField) {
+      inputField.focus();
+    }
+  };
+
   const handleTextAction = async (action) => {
     if (!selectedText) return;
     setProcessingText(true);
@@ -432,6 +480,11 @@ export default function AICopilotPanel({ thread }) {
     aiCopilotPanel: {
       fontFamily: "'Inter', sans-serif", // Matching typical modern UI font
       backgroundColor: '#f8f9fa', // Light background for the panel
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh', // Full viewport height
+      maxHeight: '100vh',
+      overflow: 'hidden', // Prevent overall scrolling
     },
     userMessageBubble: {
       backgroundColor: '#e9ecef', // A light grey for user messages
@@ -555,20 +608,31 @@ export default function AICopilotPanel({ thread }) {
       fontSize: '0.8rem',
     },
     chatHistory: {
-      maxHeight: '80vh', // Adjust based on other elements' height
-      flexGrow: 1,
+      flex: '1 1 auto', // Allow it to grow and shrink
+      overflow: 'auto', // Make it scrollable
       paddingRight: '10px', // For scrollbar
+      minHeight: '100px', // Ensure there's always some space for chat
     },
     inputForm: {
       padding: '15px',
       borderTop: '1px solid #dee2e6',
       backgroundColor: '#f8f9fa', // Consistent with panel background
+      flex: '0 0 auto', // Don't grow or shrink
     },
     inputField: {
       borderRadius: '20px',
       borderColor: '#ced4da',
       paddingLeft: '15px',
       paddingRight: '15px',
+      paddingTop: '10px',
+      paddingBottom: '10px',
+      width: '100%',
+      lineHeight: '1.5',
+      outline: 'none',
+      boxShadow: 'none',
+      border: '1px solid #ced4da',
+      color:'black',
+      transition: 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
     },
     sendButton: {
       backgroundColor: '#6f42c1',
@@ -643,7 +707,7 @@ export default function AICopilotPanel({ thread }) {
 
 
   return (
-    <div className="d-flex flex-column h-100" style={styles.aiCopilotPanel}>
+    <div className="d-flex flex-column" style={styles.aiCopilotPanel}>
       {/* Inject keyframes for animations */}
       <style>
         {`
@@ -675,7 +739,7 @@ export default function AICopilotPanel({ thread }) {
           .text-menu-btn:hover { background-color: #f0f0f0; }
         `}
       </style>
-      <Nav variant="tabs" className="mb-3 px-3 pt-2">
+      <Nav variant="tabs" className="px-3 pt-2" style={{ flex: '0 0 auto' }}>
         <Nav.Item>
           <Nav.Link active={activeTab === 'copilot'} onClick={() => setActiveTab('copilot')}>
             <i className="fas fa-robot me-2"></i>AI Copilot
@@ -694,7 +758,7 @@ export default function AICopilotPanel({ thread }) {
             {/* Prompt Templates removed as per requirements */}
 
             {/* Chat History */}
-            <div className="overflow-auto mb-0 px-3" style={styles.chatHistory}>
+            <div className="overflow-auto px-3 chat-history" style={styles.chatHistory}>
               {qaHistory.map((item, index) => (
                 <div key={index}>
                   {/* User's Question - Rendered as part of the AI response block in the new design */}
@@ -796,16 +860,48 @@ export default function AICopilotPanel({ thread }) {
             </div>
 
             {/* Ask input */}
-            <Form className="d-flex align-items-center" onSubmit={handleAsk} style={styles.inputForm}>
-              <Form.Control
-                type="text"
-                placeholder="Ask a follow up question..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                disabled={loading}
-                className="flex-grow-1 me-2"
-                style={styles.inputField}
-              />
+            <Form className="d-flex align-items-end" onSubmit={handleAsk} style={styles.inputForm}>
+              <div className="flex-grow-1 me-2 position-relative">
+                <textarea
+                  placeholder="Ask a follow up question..."
+                  value={question}
+                  onChange={(e) => {
+                    setQuestion(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    // Submit on Ctrl+Enter or Cmd+Enter
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                      e.preventDefault();
+                      if (question.trim()) {
+                        handleAsk(e);
+                      }
+                    }
+                  }}
+                  disabled={loading}
+                  className="copilot-input w-100"
+                  style={{
+                    ...styles.inputField,
+                    resize: 'none',
+                    height: 'auto',
+                    minHeight: '40px',
+                    maxHeight: '150px',
+                    overflow: 'auto',
+                    paddingRight: '30px',
+                    backgroundColor: '#ffffff'
+                  }}
+                  ref={textareaRef}
+                />
+                <small 
+                  className="text-muted position-absolute" 
+                  style={{
+                    right: '10px',
+                    bottom: '5px',
+                    fontSize: '0.7rem'
+                  }}
+                >
+                  Ctrl+Enter
+                </small>
+              </div>
               <Button 
                 type="submit" 
                 disabled={loading || !question.trim()}
@@ -849,6 +945,7 @@ export default function AICopilotPanel({ thread }) {
                 transform: 'translate(-50%, -110%)', // Adjust to appear above selection
             }}
             >
+            <Button style={styles.textMenuButton} onClick={() => handleAddToCopilot()}>🤖 Add to Copilot</Button>
             <Button style={styles.textMenuButton} onClick={() => handleTextAction('polish')}>✨ Polish</Button>
             <Button style={styles.textMenuButton} onClick={() => handleTextAction('elaborate')}>📖 Elaborate</Button>
             <Button style={styles.textMenuButton} onClick={() => handleTextAction('summarize')}>🧠 Summarize</Button>
