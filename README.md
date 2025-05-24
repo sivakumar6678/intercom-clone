@@ -36,7 +36,8 @@ intercom-clone/
 │   │   ├── InboxSidebar.jsx      # Sidebar with conversation list
 │   │   └── ReplyBox.jsx          # Message composition box
 │   ├── data/            # Mock data
-│   │   └── emailThreads.js       # Sample conversation data
+|   |   ├── api.js            # ai api calls
+│   │   └── emailThreads.js   # Sample conversation data
 │   ├── pages/           # Page components
 │   │   └── AdminInbox.jsx        # Main inbox page
 │   ├── Styles/          # CSS files
