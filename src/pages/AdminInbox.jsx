@@ -23,36 +23,7 @@ export default function AdminInbox() {
 
         {/* Conversation Panel */}
         <Col xs={12} md={6} lg={6} xl={6} className="d-flex flex-column">
-          {/* Header */}
-          <div className="px-3 py-3 border-bottom bg-white d-flex justify-content-between align-items-center">
-            <div>
-              <h6 className="fw-bold mb-0">
-                {selectedThread ? (
-                  <>
-                    {selectedThread.customer?.name || 'Customer'} 
-                    <Badge bg="success" className="ms-2">Active</Badge>
-                  </>
-                ) : 'Select a conversation'}
-              </h6>
-              {selectedThread && (
-                <small className="text-muted">
-                  {selectedThread.customer?.email || 'No email available'}
-                </small>
-              )}
-            </div>
-            <div>
-              {selectedThread && (
-                <>
-                  <Button variant="outline-secondary" size="sm" className="me-2">
-                    <i className="fas fa-phone me-1"></i> Call
-                  </Button>
-                  <Button variant="outline-danger" size="sm">
-                    <i className="fas fa-archive me-1"></i> Archive
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
+          
 
           {/* Chat Thread */}
           <div className="flex-grow-1 overflow-auto px-3 py-2 chat-history">

@@ -4,7 +4,8 @@ import ReactMarkdown from 'react-markdown';
 // Import the real API functions
 import { getGeminiReply, refineDraftWithTone } from '../data/api';
 // Import CSS
-import './AICopilotPanel.css';
+import '../Styles/AICopilotPanel.css';
+
 
 // Custom component for animated markdown rendering with typing effect
 const AnimatedMarkdown = ({ text, isLoading, isNewMessage = false }) => {
@@ -541,34 +542,30 @@ export default function AICopilotPanel({ thread }) {
       </Nav>
 
       {activeTab === 'copilot' ? (
-        thread || qaHistory.length > 0 ? ( // Show chat if thread exists or if there's mock history
-          <>
-            {/* Prompt Templates removed as per requirements */}
-
-            {/* Chat History */}
-            <div className="overflow-auto px-3 chat-history">
-              {qaHistory.map((item, index) => (
+        <>
+          {/* Chat History */}
+          <div className="overflow-auto px-3 chat-history">
+            {qaHistory.length > 0 ? (
+              // Show chat history if it exists
+              qaHistory.map((item, index) => (
                 <div key={index}>
-                  {/* User's Question - Rendered as part of the AI response block in the new design */}
-                  {/* If item.isUser is true, it's a standalone user message (e.g., while AI is typing) */}
-                  {/* The new design implies user question is shown, then AI response follows. */}
-                  {/* Let's display the user's question that led to this AI response */}
-                   {item.isUser && (
-                     <div className={`user-message-bubble-custom ${index > 0 ? 'mt-3' : ''}`}>
-                        <div className="fw-bold small text-muted mb-1">You</div>
-                        <div>{item.question}</div>
-                     </div>
-                   )}
+                  {/* User's Question */}
+                  {item.isUser && (
+                    <div className={`user-message-bubble-custom ${index > 0 ? 'mt-3' : ''}`}>
+                      <div className="fw-bold small text-muted mb-1">You</div>
+                      <div>{item.question}</div>
+                    </div>
+                  )}
 
                   {/* AI Response */}
-                  {(!item.isUser || item.isLoading) && ( // Show if it's an AI message or a user message waiting for AI
+                  {(!item.isUser || item.isLoading) && (
                     <div className="ai-message-wrapper">
                       <div className="ai-avatar">
-                        <i className="fas fa-robot"></i> {/* Or a custom Fin icon */}
+                        <i className="fas fa-robot"></i>
                       </div>
                       <div className="ai-message-content">
                         <div className="ai-header">
-                          Copilot {/* Changed from "Fin" to match existing code context */}
+                          Copilot
                         </div>
                         {/* Message bubble with typing animation effect */}
                         <div className={`selectable-text ${item.isLoading ? 'loading-message-bubble' : 'ai-message-bubble'}`}>
@@ -606,10 +603,12 @@ export default function AICopilotPanel({ thread }) {
                                     id={`dropdown-actions-${index}`}
                                   />
                                   <Dropdown.Menu align="end">
-                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('polish');}}>✨ Polish</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('summarize');}}>🧠 Summarize</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('friendly');}}>🗣️ Friendly</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('professional');}}>💼 Professional</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('rephrase');}}>🔄 Rephrase</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('mytone');}}>👤 My Tone</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('friendly');}}>� More Friendly</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('formal');}}>👔 More Formal</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('grammar');}}>✓ Fix Grammar</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => { setSelectedText(item.answer); setTextMenuTarget(event.target); setShowTextMenu(true); handleTextAction('translate');}}>🌐 Translate</Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item onClick={() => navigator.clipboard.writeText(item.answer)}><i className="fas fa-copy me-2"></i>Copy</Dropdown.Item>
                                   </Dropdown.Menu>
@@ -643,66 +642,89 @@ export default function AICopilotPanel({ thread }) {
                     </div>
                   )}
                 </div>
-              ))}
-              <div ref={scrollRef} />
-            </div>
+              ))
+            ) : (
+              // Show welcome message if no chat history
+              <div className="welcome-container text-center">
+                <div className="welcome-box">
 
-            {/* Ask input */}
-            <Form className="d-flex align-items-end input-form" onSubmit={handleAsk}>
-              <div className="input-container">
-                <textarea
-                  placeholder="Ask a follow up question..."
-                  value={question}
-                  onChange={(e) => {
-                    setQuestion(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    // Submit on Ctrl+Enter or Cmd+Enter
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                      e.preventDefault();
-                      if (question.trim()) {
-                        handleAsk(e);
-                      }
-                    }
-                  }}
-                  disabled={loading}
-                  className="copilot-input w-100 input-field"
-                  ref={textareaRef}
-                />
-                <small className="text-muted position-absolute ctrl-enter-hint">
-                  Ctrl+Enter
-                </small>
+                <div className="welcome-icon">
+                  <i className="fas fa-robot"></i>
+                </div>
+                <h4 className="welcome-title">How can I help you today?</h4>
+                <p className="welcome-subtitle">Ask me anything about this conversation</p>
+                
+                </div>
+               
               </div>
-              <Button 
-                type="submit" 
-                disabled={loading || !question.trim()}
-                className="send-button"
-              >
-                {loading ? (
-                  <Spinner animation="border" size="sm" variant="light" />
-                ) : (
-                  <i className="fas fa-arrow-up text-white"></i>
-                )}
-              </Button>
-            </Form>
-          </>
-        ) : (
-          <div className="text-center p-5">
-            <i className="fas fa-comments fa-3x text-muted mb-3"></i>
-            <p className="text-muted">
-              Select a conversation or start by asking a question to use AI Copilot.
-            </p>
+            )}
+            <div ref={scrollRef} />
           </div>
-        )
-      ) : ( // Details Tab
-        <div className="p-3">
-          <h6 className="mb-3">Conversation Details</h6>
-          {thread ? (
-            <div>
-              <p><strong>Customer:</strong> {thread.customer?.name || 'Unknown'}</p>
-              {/* ... other details ... */}
+
+          {/* Ask input - Always show this regardless of whether there's chat history */}
+          <Form className="d-flex align-items-end input-form" onSubmit={handleAsk}>
+            <div className="input-container">
+              <textarea
+                placeholder="Ask AI Copilot a question..."
+                value={question}
+                onChange={(e) => {
+                  setQuestion(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  // Submit on Ctrl+Enter or Cmd+Enter
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (question.trim()) {
+                      handleAsk(e);
+                    }
+                  }
+                }}
+                disabled={loading}
+                className="copilot-input w-100 input-field"
+                ref={textareaRef}
+              />
+              <small className="text-muted position-absolute ctrl-enter-hint">
+                Ctrl+Enter
+              </small>
             </div>
-          ) : <p className="text-muted">No conversation selected.</p>}
+            <Button 
+              type="submit" 
+              disabled={loading || !question.trim()}
+              className="send-button"
+            >
+              {loading ? (
+                <Spinner animation="border" size="sm" variant="light" />
+              ) : (
+                <i className="fas fa-arrow-up text-white"></i>
+              )}
+            </Button>
+          </Form>
+        </>
+        )
+       : ( // Details Tab
+        <div className="p-3 details-panel">
+          <h5 className="mb-3 border-bottom pb-2">Customer Details</h5>
+          {thread ? (
+            <div className="conversation-details">
+              <Card className="mb-3">
+                <Card.Body>
+                  <div className="detail-item mb-2">
+                    <strong><i className="fas fa-user me-2"></i>Name:</strong> 
+                    <span>{thread.from?.name || 'Unknown'}</span>
+                  </div>
+                  <div className="detail-item mb-2">
+                    <strong><i className="fas fa-envelope me-2"></i>Email:</strong> 
+                    <span>{thread.email || 'Not provided'}</span>
+                  </div>
+                </Card.Body>
+              </Card>
+            </div>
+          ) : (
+            <div className="text-center p-5">
+              <i className="fas fa-info-circle fa-3x text-muted mb-3"></i>
+              <p className="text-muted">No conversation selected.</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -716,11 +738,12 @@ export default function AICopilotPanel({ thread }) {
             }}
             >
             <Button className="text-menu-button" onClick={() => handleAddToCopilot()}>🤖 Add to Copilot</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('polish')}>✨ Polish</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('elaborate')}>📖 Elaborate</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('summarize')}>🧠 Summarize</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('friendly')}>🗣️ Friendly</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('professional')}>💼 Professional</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('rephrase')}>Rephrase</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('mytone')}> My tone of voice</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('friendly')}>More friendly</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('formal')}> More formal</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('grammar')}>Fix grammar & spelling</Button>
+            <Button className="text-menu-button" onClick={() => handleTextAction('translate')}>Translate...</Button>
             </div>
         )}
 

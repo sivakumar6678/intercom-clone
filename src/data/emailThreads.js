@@ -19,6 +19,7 @@ export const emailThreads = [
     from: { name: "Ivan - Nike", avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=I'},
     subject: "Order Confirmation",
     preview: "Thank you for your order!",
+    email: 'ivan.nike@example.com',
     time: '30m',
     unread: true,
     messages: [
@@ -31,6 +32,7 @@ export const emailThreads = [
     from: { name: "Lead from New York", avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=L' },
     subject: "Order Confirmation",
     preview: "Thank you for your order!",
+    email: 'lead.newyork@example.com',
     time: '40m',
     unread: true,
     messages: [
@@ -43,6 +45,7 @@ export const emailThreads = [
     from: { name: "John Doe", avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=J'},
     subject: "Product Inquiry",
     preview: "Hello John, I'm interested in purchasing the XYZ product...",
+    email: 'john.doe@example.com',
     time: '1h',
     unread: false, 
     messages: [
@@ -55,6 +58,7 @@ export const emailThreads = [
     from:{name:"Jane Smith",avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=J'},
     subject:"Shipping Update",
     preview:"Your package has been shipped and will arrive by tomorrow.",
+    email:"jane.smith@example.com",
     time:'2h',
     unread:false,
     messages:[

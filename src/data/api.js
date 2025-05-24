@@ -91,23 +91,26 @@ export async function refineDraftWithTone(draft, tone, contextMessages) {
     
     let instruction = '';
     switch (tone) {
-      case 'polish':
-        instruction = 'Improve and polish this draft to make it more refined and professional while maintaining its core message:';
+      case 'rephrase':
+        instruction = 'Rephrase this text while keeping the same meaning and tone:';
         break;
-      case 'elaborate':
-        instruction = 'Elaborate on this draft to provide more details and comprehensive information:';
-        break;
-      case 'summarize':
-        instruction = 'Summarize this draft to create a shorter, concise version while maintaining the key points:';
+      case 'mytone':
+        instruction = 'Rewrite this text to match my usual tone of voice based on previous messages:';
         break;
       case 'friendly':
-        instruction = 'Rewrite this draft in a more casual, friendly, and conversational tone:';
+        instruction = 'Make this text more friendly and conversational:';
         break;
-      case 'professional':
-        instruction = 'Rewrite this draft in a formal, professional tone appropriate for business communication:';
+      case 'formal':
+        instruction = 'Make this text more formal and professional:';
+        break;
+      case 'grammar':
+        instruction = 'Fix any grammar and spelling errors in this text:';
+        break;
+      case 'translate':
+        instruction = 'Translate this text to the appropriate language based on context:';
         break;
       default:
-        instruction = 'Improve this draft response:';
+        instruction = 'Improve this text:';
     }
 
     const body = {
