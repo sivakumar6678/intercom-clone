@@ -2,8 +2,9 @@
 
 A modern customer messaging platform clone built with React and Bootstrap, featuring an AI-powered copilot for customer support agents.
 
-![Intercom Clone Link](https://intercom-clone-one.vercel.app/)
+## Live Demo
 
+Try the app here: [https://intercom-clone-one.vercel.app/](https://intercom-clone-one.vercel.app/)
 ## Features
 
 - **Admin Inbox Interface**: Clean, modern UI for customer support agents
