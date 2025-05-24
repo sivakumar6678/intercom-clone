@@ -183,6 +183,7 @@ export default function AICopilotPanel({ thread }) {
   const [textMenuTarget, setTextMenuTarget] = useState(null);
   const [processingText, setProcessingText] = useState(false);
   const [textAction, setTextAction] = useState('');
+  const [isInReplyTextarea, setIsInReplyTextarea] = useState(false);
 
   const storageKey = `copilot-history-${thread?.id || 'default'}`;
 
@@ -261,6 +262,19 @@ export default function AICopilotPanel({ thread }) {
       if (selection && selection.toString().trim().length > 0) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
+        
+        // Check if selection is within a reply textarea
+        let isInReply = false;
+        if (selection.anchorNode) {
+          const replyTextarea = document.querySelector('.reply-textarea');
+          if (replyTextarea) {
+            // Check if the selection is within the reply textarea
+            isInReply = replyTextarea.contains(selection.anchorNode) || 
+                        replyTextarea.contains(selection.focusNode);
+          }
+        }
+        setIsInReplyTextarea(isInReply);
+        
         if (rect && (rect.width > 0 || rect.height > 0)) { // Ensure there's a valid rect
           setSelectedText(selection.toString());
           setTextMenuTarget({
@@ -737,13 +751,20 @@ export default function AICopilotPanel({ thread }) {
                 left: `${textMenuTarget.left}px`
             }}
             >
+            {/* Always show Add to Copilot button */}
             <Button className="text-menu-button" onClick={() => handleAddToCopilot()}>🤖 Add to Copilot</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('rephrase')}>Rephrase</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('mytone')}> My tone of voice</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('friendly')}>More friendly</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('formal')}> More formal</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('grammar')}>Fix grammar & spelling</Button>
-            <Button className="text-menu-button" onClick={() => handleTextAction('translate')}>Translate...</Button>
+            
+            {/* Only show AI text actions when in the reply textarea */}
+            {isInReplyTextarea && (
+              <>
+                <Button className="text-menu-button" onClick={() => handleTextAction('rephrase')}>Rephrase</Button>
+                <Button className="text-menu-button" onClick={() => handleTextAction('mytone')}> My tone of voice</Button>
+                <Button className="text-menu-button" onClick={() => handleTextAction('friendly')}>More friendly</Button>
+                <Button className="text-menu-button" onClick={() => handleTextAction('formal')}> More formal</Button>
+                <Button className="text-menu-button" onClick={() => handleTextAction('grammar')}>Fix grammar & spelling</Button>
+                <Button className="text-menu-button" onClick={() => handleTextAction('translate')}>Translate...</Button>
+              </>
+            )}
             </div>
         )}
 
