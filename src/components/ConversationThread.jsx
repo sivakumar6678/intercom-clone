@@ -1,8 +1,18 @@
 import { Image } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import '../Styles/InboxSidebar.css';
+import { useEffect, useRef } from 'react';
 
 export default function ConversationThread({ thread }) {
+  const messagesEndRef = useRef(null);
+  
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [thread?.messages]);
+  
   if (!thread) return <div className="text-center p-4 text-muted">Select a conversation</div>;
 
   return (
@@ -68,6 +78,8 @@ export default function ConversationThread({ thread }) {
             </div>
           );
         })}
+        {/* This empty div is used as a reference for scrolling to the bottom */}
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );

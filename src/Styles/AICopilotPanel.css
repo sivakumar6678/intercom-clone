@@ -1,87 +1,421 @@
-          /* --- Animations --- */
-          @keyframes loadingShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-          @keyframes thinkingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-          .thinking-dot { display: inline-block; width: 8px; height: 8px; margin: 0 2px; background-color: #6f42c1; border-radius: 100%; animation: thinkingBounce 1.4s infinite ease-in-out both; }
-          .thinking-dot:nth-child(1) { animation-delay: -0.32s !important; }
-          .thinking-dot:nth-child(2) { animation-delay: -0.16s !important; }
-          .thinking-dot:nth-child(3) { animation-delay: 0s !important; }
-          @keyframes blink-caret { from, to { border-color: transparent; } 50% { border-color: #6f42c1; } }
-          .animated-markdown .typing-content.typing .typing-cursor { display: inline-block; width: 2px; height: 1em; background-color: #6f42c1; animation: blink-caret 0.75s step-end infinite; margin-left: 1px; position: relative; bottom: -2px; }
-          .animated-markdown .typing-content p:last-child:empty::after { content: '.'; visibility: hidden; }
+/* --- Animations --- */
+@keyframes loadingShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
 
-          /* --- General Panel Styles --- */
-          .ai-copilot-panel { height: 100%; max-height: 900px; border: 1px solid #dee2e6; border-radius: 0.3rem; background-color: #fff; font-size: 0.9rem; width: 100%; }
-          .nav-tabs-fixed { border-bottom: 1px solid #dee2e6; }
-          .nav-tabs-fixed .nav-link { font-size: 0.9rem; padding: 0.6rem 1rem;}
-          .chat-history { flex-grow: 1; padding-bottom: 1rem !important; }
-          .user-message-bubble-custom { background-color: #0d6efd; color: white; padding: 0.5rem 1rem; border-radius: 1rem 1rem 0.25rem 1rem; align-self: flex-end; max-width: 80%; margin-left: auto; word-wrap: break-word; }
-          .ai-message-wrapper { display: flex; margin-top: 1rem; max-width: 90%; }
-          .ai-avatar { font-size: 1.2rem; color: #6f42c1; margin-right: 0.75rem; margin-top: 0.25rem; flex-shrink: 0; }
-          .ai-message-content { display: flex; flex-direction: column; width: 100%; }
-          .ai-header { font-weight: bold; font-size: 0.9rem; color: #333; margin-bottom: 0.25rem; }
-          .ai-message-bubble { background-color: #f1f3f5; padding: 0.5rem 1rem; border-radius: 1rem 1rem 1rem 0.25rem; word-wrap: break-word; }
-          .loading-message-bubble { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loadingShimmer 1.5s infinite linear; padding: 0.5rem 1rem; border-radius: 1rem 1rem 1rem 0.25rem; min-height: 3em; }
-          .message-content p { margin-bottom: 0.5rem; } 
-          .message-content p:last-child { margin-bottom: 0; }
-          .sources-section { margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; }
-          .sources-header { font-weight: bold; margin-bottom: 0.25rem; color: #555; }
-          .source-item { padding: 0.2rem 0; cursor: pointer; color: #0d6efd; }
-          .source-item:hover { text-decoration: underline; }
-          .source-icon { margin-right: 0.3rem; color: #6c757d; }
-          .see-all-link { font-size: 0.8rem; color: #0d6efd; text-decoration: none; }
-          .see-all-link:hover { text-decoration: underline; }
-          
-          /* Copilot Input Area Styling (for AI Copilot's own input) */
-          .input-form { padding: 0.75rem; border-top: 1px solid #dee2e6; background-color: #f8f9fa; display: flex; align-items: flex-end; }
-          .input-container { position: relative; flex-grow: 1; margin-right: 0.5rem; }
-          .copilot-input { border-radius: 0.5rem; padding-right: 70px !important; resize: none; overflow-y: auto; font-size:0.9rem; min-height: 40px; line-height: 1.4; }
-          .ctrl-enter-hint { font-size: 0.7rem; position: absolute; bottom: 5px; right: 5px; color: #6c757d; background-color: #fff; padding: 1px 3px; border-radius: 2px; pointer-events: none; }
-          .send-button { border-radius: 0.5rem; width: 40px; height: 40px; display:flex; align-items:center; justify-content:center; flex-shrink: 0; }
-          
-          .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #6c757d; }
-          .welcome-box { padding: 2rem; background-color: #f8f9fa; border-radius: 0.5rem; text-align: center; }
-          .welcome-icon { font-size: 3rem; margin-bottom: 1rem; color: #6f42c1; }
-          .welcome-title { font-size: 1.5rem; color: #343a40; margin-bottom: 0.5rem; }
-          .welcome-subtitle { font-size: 1rem; }
-          
-          .details-panel { font-size: 0.85rem; padding: 1rem; overflow-y: auto; flex-grow: 1; }
-          .details-panel .card { margin-bottom: 1rem; box-shadow: none; border: 1px solid #e9ecef; }
-          .details-panel .card-header { background-color: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem; font-size: 0.9rem;}
-          .details-panel .list-group-item { padding: 0.5rem 1rem; border-left:0; border-right:0;}
-          .details-panel .list-group-item:first-child { border-top:0;}
-          .details-panel .list-group-item:last-child { border-bottom:0;}
-          .detail-list-item { font-size: 0.85rem; }
-          .detail-list-item .btn-sm { padding: .1rem .4rem; font-size: .8rem; }
-          .detail-accordion-item .accordion-header button { font-size: 0.9rem; font-weight: bold; padding: 0.75rem 1.25rem; background-color: #f7f7f9; color: #333; border-bottom: 1px solid #e0e0e0;}
-          .detail-accordion-item .accordion-header button:not(.collapsed) { background-color: #e9ecef; }
-          .detail-accordion-item .accordion-body { padding: 1rem; font-size: 0.85rem; background-color: #fff; }
+@keyframes thinkingBounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1.0);
+  }
+}
 
-          .text-selection-menu, .chat-add-to-copilot-menu { 
-            position: absolute; background-color: white; border: 1px solid #ccc; border-radius: 6px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1050; display: flex; 
-            flex-direction: column; padding: 0.3rem; min-width: 180px; 
-          }
-          .text-menu-button { 
-            background: none; border: none; padding: 0.6rem 0.9rem; text-align: left; width: 100%; 
-            font-size: 0.85rem; border-radius: 4px; color: #333; display: flex; align-items: center;
-          }
-          .text-menu-button:hover { background-color: #f0f0f0; color: #000; }
-          .text-menu-button i { margin-right: 0.75rem; color: #555; width: 16px; text-align: center;}
-          .chat-add-to-copilot-menu .text-menu-button { min-width: 150px; justify-content: center; }
+.thinking-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  background-color: #6f42c1;
+  border-radius: 100%;
+  animation: thinkingBounce 1.4s infinite ease-in-out both;
+}
 
-          /* Styles for ReplyBox Toolbar - will be used by the external ReplyBox.jsx */
-          .reply-box-input { /* Parent container for ReplyBox, should have position-relative */ }
-          .reply-box-toolbar {
-            position: absolute; background-color: white;  border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1060; display: flex;
-            padding: 0.25rem; gap: 0.25rem; 
-          }
-          .reply-box-toolbar-button {
-            background: none; border: none; color: #333; padding: 0.4rem 0.6rem; 
-            font-size: 0.9rem; border-radius: 4px; line-height: 1; 
-          }
-          .reply-box-toolbar-button:hover { background-color: #f0f0f0; }
-          .reply-box-toolbar-button.active { background-color: #0d6efd; color: white;}
-          .reply-box-toolbar-separator { width: 1px; background-color: #dee2e6; margin: 0.25rem 0.1rem; }
-          .add-to-composer-button { font-size: 0.85rem; padding: 0.3rem 0.6rem; }
-          .dropdown-toggle::after { margin-left: .5em !important; }
+.thinking-dot:nth-child(1) {
+  animation-delay: -0.32s !important;
+}
+
+.thinking-dot:nth-child(2) {
+  animation-delay: -0.16s !important;
+}
+
+.thinking-dot:nth-child(3) {
+  animation-delay: 0s !important;
+}
+
+@keyframes blink-caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #6f42c1;
+  }
+}
+
+.animated-markdown .typing-content.typing .typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: #6f42c1;
+  animation: blink-caret 0.75s step-end infinite;
+  margin-left: 1px;
+  position: relative;
+  bottom: -2px;
+}
+
+.animated-markdown .typing-content p:last-child:empty::after {
+  content: '.';
+  visibility: hidden;
+}
+
+/* --- General Panel Styles --- */
+.ai-copilot-panel {
+  height: 100%;
+  max-height: 900px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.3rem;
+  background-color: #fff;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.nav-tabs-fixed {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.nav-tabs-fixed .nav-link {
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+}
+
+.chat-history {
+  flex-grow: 1;
+  padding-bottom: 1rem !important;
+}
+
+.user-message-bubble-custom {
+  background-color: #0d6efd;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  align-self: flex-end;
+  max-width: 80%;
+  margin-left: auto;
+  word-wrap: break-word;
+}
+
+.ai-message-wrapper {
+  display: flex;
+  margin-top: 1rem;
+  max-width: 90%;
+}
+
+.ai-avatar {
+  font-size: 1.2rem;
+  color: #6f42c1;
+  margin-right: 0.75rem;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.ai-message-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ai-header {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.ai-message-bubble {
+  background-color: #f1f3f5;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  word-wrap: break-word;
+}
+
+.loading-message-bubble {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loadingShimmer 1.5s infinite linear;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  min-height: 3em;
+}
+
+.message-content p {
+  margin-bottom: 0.5rem;
+}
+
+.message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.sources-section {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.85rem;
+}
+
+.sources-header {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: #555;
+}
+
+.source-item {
+  padding: 0.2rem 0;
+  cursor: pointer;
+  color: #0d6efd;
+}
+
+.source-item:hover {
+  text-decoration: underline;
+}
+
+.source-icon {
+  margin-right: 0.3rem;
+  color: #6c757d;
+}
+
+.see-all-link {
+  font-size: 0.8rem;
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.see-all-link:hover {
+  text-decoration: underline;
+}
+
+/* Copilot Input Area Styling (for AI Copilot's own input) */
+.input-form {
+  padding: 0.75rem;
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: flex-end;
+}
+
+.input-container {
+  position: relative;
+  flex-grow: 1;
+  margin-right: 0.5rem;
+}
+
+.copilot-input {
+  border-radius: 0.5rem;
+  padding-right: 70px !important;
+  resize: none;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  min-height: 40px;
+  line-height: 1.4;
+}
+
+.ctrl-enter-hint {
+  font-size: 0.7rem;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  color: #6c757d;
+  background-color: #fff;
+  padding: 1px 3px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.send-button {
+  border-radius: 0.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6c757d;
+}
+
+.welcome-box {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.welcome-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #6f42c1;
+}
+
+.welcome-title {
+  font-size: 1.5rem;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-subtitle {
+  font-size: 1rem;
+}
+
+.details-panel {
+  font-size: 0.85rem;
+  padding: 1rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.details-panel .card {
+  margin-bottom: 1rem;
+  box-shadow: none;
+  border: 1px solid #e9ecef;
+}
+
+.details-panel .card-header {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.details-panel .list-group-item {
+  padding: 0.5rem 1rem;
+  border-left: 0;
+  border-right: 0;
+}
+
+.details-panel .list-group-item:first-child {
+  border-top: 0;
+}
+
+.details-panel .list-group-item:last-child {
+  border-bottom: 0;
+}
+
+.detail-list-item {
+  font-size: 0.85rem;
+}
+
+.detail-list-item .btn-sm {
+  padding: .1rem .4rem;
+  font-size: .8rem;
+}
+
+.detail-accordion-item .accordion-header button {
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.75rem 1.25rem;
+  background-color: #f7f7f9;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.detail-accordion-item .accordion-header button:not(.collapsed) {
+  background-color: #e9ecef;
+}
+
+.detail-accordion-item .accordion-body {
+  padding: 1rem;
+  font-size: 0.85rem;
+  background-color: #fff;
+}
+
+.text-selection-menu,
+.chat-add-to-copilot-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  padding: 0.3rem;
+  min-width: 180px;
+}
+
+.text-menu-button {
+  background: none;
+  border: none;
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+  width: 100%;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.text-menu-button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.text-menu-button i {
+  margin-right: 0.75rem;
+  color: #555;
+  width: 16px;
+  text-align: center;
+}
+
+.chat-add-to-copilot-menu .text-menu-button {
+  min-width: 150px;
+  justify-content: center;
+}
+
+/* Styles for ReplyBox Toolbar - will be used by the external ReplyBox.jsx */
+.reply-box-toolbar {
+  position: absolute;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1060;
+  display: flex;
+  padding: 0.25rem;
+  gap: 0.25rem;
+}
+
+.reply-box-toolbar-button {
+  background: none;
+  border: none;
+  color: #333;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.reply-box-toolbar-button:hover {
+  background-color: #f0f0f0;
+}
+
+.reply-box-toolbar-button.active {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.reply-box-toolbar-separator {
+  width: 1px;
+  background-color: #dee2e6;
+  margin: 0.25rem 0.1rem;
+}
+
+.add-to-composer-button {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.dropdown-toggle::after {
+  margin-left: .5em !important;
+}

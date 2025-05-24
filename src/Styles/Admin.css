@@ -282,6 +282,23 @@
   border-radius: 3px;
 }
 
+/* Chat history container styles */
+.chat-history-container {
+  height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Conversation thread styles */
+.conversation-thread {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Rounded pill buttons */
 .rounded-pill {
   padding-left: 15px;
