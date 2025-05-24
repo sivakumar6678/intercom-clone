@@ -243,12 +243,12 @@ export default function ReplyBox({ thread, onSendMessage, refineFunction }) {
           }}
            onClick={(e) => e.stopPropagation()} 
         >
-          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('rephrase')}><i className="fas fa-sync-alt"></i>Rephrase</Button>
-          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('mytone')}><i className="fas fa-user-edit"></i>My tone of voice</Button>
-          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('friendly')}><i className="far fa-smile"></i>More friendly</Button>
-          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('formal')}><i className="fas fa-user-tie"></i>More formal</Button>
-          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('grammar')}><i className="fas fa-spell-check"></i>Fix grammar & spelling</Button>
-          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('translate')}><i className="fas fa-language"></i>Translate...</Button>
+          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('rephrase')}>Rephrase</Button>
+          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('mytone')}>My tone of voice</Button>
+          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('friendly')}>More friendly</Button>
+          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('formal')}> More formal</Button>
+          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('grammar')}>Fix grammar & spelling</Button>
+          <Button variant="light" className="text-menu-button" onClick={() => handleTextActionInReplyBox('translate')}>Translate...</Button>
         </div>
       )}
 
